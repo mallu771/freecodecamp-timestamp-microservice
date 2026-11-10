@@ -23,6 +23,37 @@ app.get("/", function (req, res) {
 app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
+// Timestamp API handler
+function handleTimestamp(req, res) {
+  var input = req.params.date;
+  var date;
+
+  if (input === undefined) {
+    date = new Date();
+  } else if (/^-?\d+$/.test(input)) {
+    date = new Date(Number(input));
+  } else {
+    date = new Date(input);
+  }
+
+  if (isNaN(date.getTime())) {
+    return res.json({ error: "Invalid Date" });
+  }
+
+  res.json({
+    unix: date.getTime(),
+    utc: date.toUTCString()
+  });
+}
+
+// API endpoints
+app.get("/api", handleTimestamp);
+app.get("/api/:date", handleTimestamp);
+
+// Keep existing hello endpoint
+app.get("/api/hello", function (req, res) {
+  res.json({ greeting: 'hello API' });
+});
 
 
 
